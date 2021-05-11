@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import  QMainWindow
 import serial
 import time
-import matplotlib
+import matplotlib.pyplot as plt
+import csv
 
 import data_form
 
@@ -20,6 +21,7 @@ class Soft(QMainWindow, data_form.Ui_MainWindow):
         self.step_time.clicked.connect(self.Maj_time)
         self.Export.clicked.connect(self.exporter)
         self.current_time = 0
+
       
 
 
@@ -30,17 +32,15 @@ class Soft(QMainWindow, data_form.Ui_MainWindow):
         
         
     def Maj_data (self) :
-        print (self.DAC_SELECTOR.currentIndex(), self.VALUE_INPUT.text())
         vara = str(self.DAC_SELECTOR.currentIndex())
         varb = self.VALUE_INPUT.text()
         self.data.write("data," +vara  +',' + varb + '\n')
 
     def Maj_time (self) :
-        print (self.Time_input.text())
         time_scale = self.time_scale.currentIndex()
         t_temp = int (self.Time_input.text())
 
-        self.data.write("tempo," + str(time_scale)  +',' + str(t_temp) + '\n')
+        self.data.write("tempo," + str(time_scale)  +',' + str(t_temp) + ",t"+ str(self.current_time) + '\n')
 
         if (time_scale == 0):
             t_temp =t_temp / 1000
@@ -52,15 +52,49 @@ class Soft(QMainWindow, data_form.Ui_MainWindow):
         self.time.setText( "t= " + str(self.current_time))
         
 
-    def plotter (self, x, y): 
-        print (x , y)
+    def plotter (self): 
+        file = open('test.csv', newline = '') 
+        reader = csv.reader(file, 
+                        quoting = csv.QUOTE_ALL,
+                        delimiter = ',')
+
+        xdat = [[0],[0],[0],[0]]
+        ydat = [[0],[0],[0],[0]]
+        tdat = 0 
+
+        for rows in reader :
+            if rows[0] == 'data' :
+                ydat[int(rows[1])].append (int(rows[2]))
+                xdat[int(rows[1])].append (tdat)
+
+            if rows[0] == 'tempo' :
+                temp = int(rows[2])
+                scale = int(rows[1])
+                if (scale == 0):
+                    temp =temp / 1000
+                if (scale == 1 ):
+                    temp = temp / 100000
+
+                tdat += temp
+        file.close()
+
+
+        plt.step(xdat[0],ydat[0], where= "post")
+        plt.step(xdat[1],ydat[1], where= "post")
+        plt.step(xdat[2],ydat[2], where= "post")
+        plt.step(xdat[3],ydat[3], where= "post")
+        plt.show()
 
     def exporter (self):
         self.data.close()
-        self.data = open ("test.csv", "r")
+        self.plotter()
 
-        for rows in self.data :
-            self.plotter( rows[1] , rows [2])
+    def data_to_bin ():
+        file = open('test.csv', newline = '') 
+        reader = csv.reader(file, 
+                        quoting = csv.QUOTE_ALL,
+                        delimiter = ',')
+            
 
 
 
