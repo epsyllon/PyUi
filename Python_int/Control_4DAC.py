@@ -13,7 +13,7 @@ class ui_DAC(QMainWindow, ui_DAC.Ui_MainWindow):
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)    
         self.ser = None
-        self.initialize_port_serie()  
+        #self.initialize_port_serie()  
         self.data_serial = 0
         self.pushButton.clicked.connect(self.display)
 

@@ -52,6 +52,8 @@ class Ui_MainWindow(object):
         self.VALUE_INPUT.setFont(font)
         self.VALUE_INPUT.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.VALUE_INPUT.setObjectName("VALUE_INPUT")
+        self.VALUE_INPUT.setInputMask("99999")
+        self.VALUE_INPUT.setMaxLength(5)
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(430, 360, 181, 16))
         font = QtGui.QFont()
@@ -69,12 +71,15 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.time.setFont(font)
         self.time.setObjectName("time")
-        self.Time_input = QtWidgets.QTextEdit(self.centralwidget)
+        self.Time_input = QtWidgets.QLineEdit(self.centralwidget)
         self.Time_input.setGeometry(QtCore.QRect(230, 200, 291, 51))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.Time_input.setFont(font)
         self.Time_input.setObjectName("Time_input")
+        self.Time_input.setInputMask('9999')
+        self.Time_input.setMaxLength(5)
+        self.Time_input.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(280, 170, 55, 16))
         self.label_3.setText("")
@@ -139,11 +144,12 @@ class Ui_MainWindow(object):
         self.VALUE_INPUT.setText(_translate("MainWindow", "1"))
         self.label_2.setText(_translate("MainWindow", "VALUE (mV)"))
         self.time.setText(_translate("MainWindow", "t = 0"))
-        self.Time_input.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"right\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        
+       # self.Time_input.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+#"p, li { white-space: pre-wrap; }\n"
+#"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
+#"<p align=\"right\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.label_4.setText(_translate("MainWindow", "time step"))
         self.time_scale.setItemText(0, _translate("MainWindow", "ms"))
         self.time_scale.setItemText(1, _translate("MainWindow", "us"))
