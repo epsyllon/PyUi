@@ -6,21 +6,24 @@ import time
 import matplotlib.pyplot as plt
 import csv
 
-import data_form
+import data_form2
 
 
-class Soft(QMainWindow, data_form.Ui_MainWindow):
+class Soft(QMainWindow, data_form2.Ui_MainWindow):
     def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)    
         self.ser = None
-        #self.initialize_port_serie()  
+        self.initialize_port_serie()  
         self.data_serial = 0
         self.pushButton.clicked.connect(self.Maj_data)
         self.data = open ("test.csv", "w")
         self.step_time.clicked.connect(self.Maj_time)
         self.Export.clicked.connect(self.exporter)
         self.current_time = 0
+        self.nb_cmd =0
+        self.fpga_cmds = []
+        self.Flash.clicked.connect(self.Send_uart)
 
       
 
@@ -77,6 +80,9 @@ class Soft(QMainWindow, data_form.Ui_MainWindow):
 
                 tdat += temp
         file.close()
+        for i in range (4):
+            xdat[i].append(tdat)
+            ydat[i].append(0)
 
 
         plt.step(xdat[0],ydat[0], where= "post")
@@ -87,14 +93,33 @@ class Soft(QMainWindow, data_form.Ui_MainWindow):
 
     def exporter (self):
         self.data.close()
+        self.data_to_bin()
         self.plotter()
 
-    def data_to_bin ():
+    def data_to_bin (self):
         file = open('test.csv', newline = '') 
         reader = csv.reader(file, 
                         quoting = csv.QUOTE_ALL,
                         delimiter = ',')
+
+        
+        
+        self.nb_cmd = 0
+
+        for rows in reader:
+            commande = 0
+            if rows [0] == 'data':
+                commande += 8
             
+            commande += int (rows[1])
+
+            self.fpga_cmds.append((commande << 12) + round (int (rows[2]) / 0.805860805861))
+            print (hex(self.fpga_cmds[self.nb_cmd]))
+            self.nb_cmd += 1
+
+    def Send_uart (self):
+        self.initialize_port_serie() 
+        
 
 
 
