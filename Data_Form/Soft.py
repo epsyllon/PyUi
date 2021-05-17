@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import  QMainWindow
+from PyQt5.QtWidgets import  QMainWindow, QFileDialog
 import serial
 import time
 import matplotlib.pyplot as plt
@@ -13,17 +13,19 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
     def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)    
-        self.ser = None
-        self.initialize_port_serie()  
+        self.ser = None 
         self.data_serial = 0
         self.pushButton.clicked.connect(self.Maj_data)
-        self.data = open ("test.csv", "w")
+        self.data = open ("init.csv", "w")
+        self.file_path = "init.csv"
         self.step_time.clicked.connect(self.Maj_time)
         self.Export.clicked.connect(self.exporter)
         self.current_time = 0
         self.nb_cmd =0
         self.fpga_cmds = []
-        self.Flash.clicked.connect(self.Send_uart)
+        self.Flash.clicked.connect(self.data_to_bin)
+        self.Open_file.clicked.connect(self.File) 
+        self.Wave.clicked.connect(self.plotter)
 
       
 
@@ -56,7 +58,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
         
 
     def plotter (self): 
-        file = open('test.csv', newline = '') 
+        file = open(self.file_path, newline = '') 
         reader = csv.reader(file, 
                         quoting = csv.QUOTE_ALL,
                         delimiter = ',')
@@ -97,7 +99,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
         self.plotter()
 
     def data_to_bin (self):
-        file = open('test.csv', newline = '') 
+        file = open(self.file_path, newline = '') 
         reader = csv.reader(file, 
                         quoting = csv.QUOTE_ALL,
                         delimiter = ',')
@@ -117,10 +119,29 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
             print (hex(self.fpga_cmds[self.nb_cmd]))
             self.nb_cmd += 1
 
+        #self.Send_uart()
+
     def Send_uart (self):
         self.initialize_port_serie() 
-        
 
+        self.ser.write(nb_cmd.to_bytes(1,'big'))
+        
+        for i in range (self.nb_cmd):
+            msb = ((self.fpga_cmds[i] & 0xFF00)>> 8 ).to_bytes(1,'big')
+            lsb = (self.fpga_cmds[i] & 0x00FF).to_bytes(1,'big')
+            self.ser.write(msb)
+            time.sleep(0.01)
+            self.ser.write(lsb)
+
+        self.ser.close()
+
+    def File (self):
+        file, check = QFileDialog.getOpenFileName(None, "QFileDialog.getOpenFileName()", "", "Data File ( *.csv)")
+
+        if check:
+            self.file_path = file
+            self.data.close()
+            print(file)
 
 
 if __name__ == '__main__':    
