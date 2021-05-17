@@ -134,6 +134,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
             self.ser.write(lsb)
 
         self.ser.close()
+        print ("lol")
 
     def File (self):
         file, check = QFileDialog.getOpenFileName(None, "QFileDialog.getOpenFileName()", "", "Data File ( *.csv)")
