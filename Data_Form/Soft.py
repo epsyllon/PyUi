@@ -112,10 +112,13 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
             commande = 0
             if rows [0] == 'data':
                 commande += 8
-            
+                self.fpga_cmds.append((commande << 12) + round (int (rows[2]) / 0.805860805861))
+            else:
+                self.fpga_cmds.append((commande << 12) + (int (rows[2]) ))
+
             commande += int (rows[1])
 
-            self.fpga_cmds.append((commande << 12) + round (int (rows[2]) / 0.805860805861))
+            
             print (hex(self.fpga_cmds[self.nb_cmd]))
             self.nb_cmd += 1
 
@@ -134,7 +137,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
             self.ser.write(lsb)
 
         self.ser.close()
-        print ("lol")
+    
 
     def File (self):
         file, check = QFileDialog.getOpenFileName(None, "QFileDialog.getOpenFileName()", "", "Data File ( *.csv)")
