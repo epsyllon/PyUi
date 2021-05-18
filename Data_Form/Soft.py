@@ -127,7 +127,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
     def Send_uart (self):
         self.initialize_port_serie() 
 
-        self.ser.write(nb_cmd.to_bytes(1,'big'))
+        self.ser.write(self.nb_cmd.to_bytes(1,'big'))
         
         for i in range (self.nb_cmd):
             msb = ((self.fpga_cmds[i] & 0xFF00)>> 8 ).to_bytes(1,'big')
