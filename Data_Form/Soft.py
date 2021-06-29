@@ -26,6 +26,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
         self.Flash.clicked.connect(self.data_to_bin)
         self.Open_file.clicked.connect(self.File) 
         self.Wave.clicked.connect(self.plotter)
+        self.nbpacket =0
 
       
 
@@ -104,7 +105,7 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
                         quoting = csv.QUOTE_ALL,
                         delimiter = ',')
 
-        
+        self.fpga_cmds.clear()
         
         self.nb_cmd = 0
 
@@ -112,30 +113,39 @@ class Soft(QMainWindow, data_form2.Ui_MainWindow):
             commande = 0
             if rows [0] == 'data':
                 commande += 8
+                commande += int(rows[1])
                 self.fpga_cmds.append((commande << 12) + round (int (rows[2]) / 0.805860805861))
             else:
+                commande += int(rows[1])
                 self.fpga_cmds.append((commande << 12) + (int (rows[2]) ))
 
-            commande += int (rows[1])
+            
 
             
-            print (hex(self.fpga_cmds[self.nb_cmd]))
+            #print (hex(self.fpga_cmds[self.nb_cmd]))
             self.nb_cmd += 1
 
-        #self.Send_uart()
+        self.Send_uart()
 
     def Send_uart (self):
-        self.initialize_port_serie() 
-
-        self.ser.write(self.nb_cmd.to_bytes(1,'big'))
-        
+        self.initialize_port_serie()
+        self.nbpacket = (2 * self.nb_cmd ) -1
+        test = self.nbpacket.to_bytes(1,'big')
+        print (test)
+        self.ser.write(test)
+        time.sleep(0.01)
+        nombres = 0
         for i in range (self.nb_cmd):
+            nombres = nombres + 1
             msb = ((self.fpga_cmds[i] & 0xFF00)>> 8 ).to_bytes(1,'big')
             lsb = (self.fpga_cmds[i] & 0x00FF).to_bytes(1,'big')
+            print (msb , lsb)
             self.ser.write(msb)
             time.sleep(0.01)
             self.ser.write(lsb)
-
+            time.sleep(0.01)
+        print ("done:")
+        print (nombres)
         self.ser.close()
     
 
